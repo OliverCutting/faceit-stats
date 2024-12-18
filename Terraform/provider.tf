@@ -1,11 +1,11 @@
 terraform {
   backend "s3" {
-    bucket         = "oliver-cutting-terraform-state"
-    region         = "eu-west-2"
-    key            = "lamp-stack.tfstate"
+    bucket  = "oliver-cutting-terraform-state"
+    region  = "eu-west-2"
+    key     = "lamp-stack.tfstate"
     encrypt = true
   }
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
