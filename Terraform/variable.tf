@@ -15,9 +15,3 @@ variable "tag_gitrepo" {
   type        = string
   default     = "github.com/OliverCutting/aws-terraform-githubactions"
 }
-
-variable "tag_environment" {
-  description = "Environment"
-  type        = string
-  default     = "dev"
-}

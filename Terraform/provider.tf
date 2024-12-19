@@ -21,7 +21,7 @@ provider "aws" {
     tags = {
       Name        = var.tag_name,
       GitRepo     = var.tag_gitrepo
-      Environment = var.tag_environment
+      Environment = terraform.workspace
     }
   }
 }
