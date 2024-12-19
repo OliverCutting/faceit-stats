@@ -7,13 +7,13 @@ variable "aws_region" {
 variable "tag_name" {
   description = "Name of project"
   type        = string
-  default     = "lamp-stack"
+  default     = "aws-terraform-githubactions"
 }
 
 variable "tag_gitrepo" {
   description = "Git repo for project"
   type        = string
-  default     = "github.com/OliverCutting/lamp-stack"
+  default     = "github.com/OliverCutting/aws-terraform-githubactions"
 }
 
 variable "tag_environment" {
