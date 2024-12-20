@@ -1,4 +1,4 @@
-name: workflow
+name: Deploy
 on: [push]
 permissions: read-all
 jobs:
@@ -69,7 +69,7 @@ jobs:
     - name: Terraform init
       run: terraform init
     - name: Create workspace
-      run: terraform workspace select -or-create ${{ github.ref_name }}
+      run: terraform workspace select -or-create $(echo ${{ github.ref_name }} | tr / -)
     - name: Terraform plan
       run: terraform plan -out=${{ env.environment }}-tfplan
     - name: Upload tfplan artifact
@@ -101,7 +101,7 @@ jobs:
     - name: Terraform init
       run: terraform init
     - name: Create workspace
-      run: terraform workspace select -or-create ${{ env.environment }}
+      run: terraform workspace select -or-create $(echo ${{ env.environment }} | tr / -)
     - name: Terraform plan
       run: terraform plan -out=${{ env.environment }}-tfplan
     - name: Upload tfplan artifact
@@ -133,7 +133,7 @@ jobs:
     - name: Terraform init
       run: terraform init
     - name: Create workspace
-      run: terraform workspace select -or-create ${{ env.environment }}
+      run: terraform workspace select -or-create $(echo ${{ env.environment }} | tr / -)
     - name: Terraform plan
       run: terraform plan -out=${{ env.environment }}-tfplan
     - name: Upload tfplan artifact
@@ -170,7 +170,7 @@ jobs:
     - name: Terraform init
       run: terraform init
     - name: Select workspace
-      run: terraform workspace select ${{ github.ref_name }}
+      run: terraform workspace select $(echo ${{ github.ref_name }} | tr / -)
     - name: Terraform Apply
       run: terraform apply -auto-approve ../${{ env.environment }}-tfplan
   apply-develop:
@@ -201,7 +201,7 @@ jobs:
     - name: Terraform init
       run: terraform init
     - name: Select workspace
-      run: terraform workspace select ${{ env.environment }}
+      run: terraform workspace select $(echo ${{ env.environment }} | tr / -)
     - name: Terraform Apply
       run: terraform apply -auto-approve ../${{ env.environment }}-tfplan
   apply-production:
@@ -232,88 +232,6 @@ jobs:
     - name: Terraform init
       run: terraform init
     - name: Select workspace
-      run: terraform workspace select ${{ env.environment }}
+      run: terraform workspace select $(echo ${{ env.environment }} | tr / -)
     - name: Terraform Apply
       run: terraform apply -auto-approve ../${{ env.environment }}-tfplan
-
-  destroy-feature:
-    name: Destroy feature
-    if: contains(github.ref, 'feature')
-    needs: apply-feature
-    runs-on: ubuntu-latest
-    env:
-      environment: feature
-    defaults:
-      run:
-        working-directory: ./Terraform
-    environment: 
-      name: feature
-    steps:
-    - name: 'Checkout GitHub repository'
-      uses: actions/checkout@v2
-    - name: 'Configure AWS credentials'
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: 'eu-west-2'
-    - name: Terraform Init
-      run: terraform init
-    - name: Select workspace
-      run: terraform workspace select ${{ github.ref_name }}
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve
-  destroy-develop:
-    name: Destroy develop 
-    if: github.ref == 'refs/heads/main'
-    needs: apply-develop
-    runs-on: ubuntu-latest
-    env:
-      environment: develop
-    defaults:
-      run:
-        working-directory: ./Terraform
-    environment: 
-      name: develop
-    steps:
-    - name: 'Checkout GitHub repository'
-      uses: actions/checkout@v2
-    - name: 'Configure AWS credentials'
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: 'eu-west-2'
-    - name: Terraform Init
-      run: terraform init
-    - name: Select workspace
-      run: terraform workspace select ${{ env.environment }}
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve
-  destroy-production:
-    name: Destroy production
-    if: contains(github.ref, 'tags/')
-    needs: apply-production
-    runs-on: ubuntu-latest
-    env:
-      environment: production
-    defaults:
-      run:
-        working-directory: ./Terraform
-    environment: 
-      name: production
-    steps:
-    - name: 'Checkout GitHub repository'
-      uses: actions/checkout@v2
-    - name: 'Configure AWS credentials'
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: 'eu-west-2'
-    - name: Terraform Init
-      run: terraform init
-    - name: Select workspace
-      run: terraform workspace select ${{ env.environment }}
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve

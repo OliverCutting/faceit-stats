@@ -1,0 +1,81 @@
+name: Destroy
+on: [workflow_dispatch]
+jobs:
+  destroy-feature:
+    name: Destroy feature
+    if: contains(github.ref, 'feature')
+    runs-on: ubuntu-latest
+    env:
+      environment: feature
+    defaults:
+      run:
+        working-directory: ./Terraform
+    environment: 
+      name: feature
+    steps:
+    - name: 'Checkout GitHub repository'
+      uses: actions/checkout@v2
+    - name: 'Configure AWS credentials'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: 'eu-west-2'
+    - name: Terraform Init
+      run: terraform init
+    - name: Select workspace
+      run: terraform workspace select ${{ github.ref_name }}
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve
+  destroy-develop:
+    name: Destroy develop 
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      environment: develop
+    defaults:
+      run:
+        working-directory: ./Terraform
+    environment: 
+      name: develop
+    steps:
+    - name: 'Checkout GitHub repository'
+      uses: actions/checkout@v2
+    - name: 'Configure AWS credentials'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: 'eu-west-2'
+    - name: Terraform Init
+      run: terraform init
+    - name: Select workspace
+      run: terraform workspace select ${{ env.environment }}
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve
+  destroy-production:
+    name: Destroy production
+    if: contains(github.ref, 'tags/')
+    runs-on: ubuntu-latest
+    env:
+      environment: production
+    defaults:
+      run:
+        working-directory: ./Terraform
+    environment: 
+      name: production
+    steps:
+    - name: 'Checkout GitHub repository'
+      uses: actions/checkout@v2
+    - name: 'Configure AWS credentials'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: 'eu-west-2'
+    - name: Terraform Init
+      run: terraform init
+    - name: Select workspace
+      run: terraform workspace select ${{ env.environment }}
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve
