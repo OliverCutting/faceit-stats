@@ -24,7 +24,7 @@ jobs:
     - name: Terraform Init
       run: terraform init
     - name: Select workspace
-      run: terraform workspace select ${{ github.ref_name }}
+      run: terraform workspace select $(echo ${{ github.ref_name }} | tr / -)
     - name: Terraform Destroy
       run: terraform destroy -auto-approve
   destroy-develop:
@@ -50,7 +50,7 @@ jobs:
     - name: Terraform Init
       run: terraform init
     - name: Select workspace
-      run: terraform workspace select ${{ env.environment }}
+      run: terraform workspace select $(echo ${{ env.environment }} | tr / -)
     - name: Terraform Destroy
       run: terraform destroy -auto-approve
   destroy-production:
@@ -76,6 +76,6 @@ jobs:
     - name: Terraform Init
       run: terraform init
     - name: Select workspace
-      run: terraform workspace select ${{ env.environment }}
+      run: terraform workspace select $(echo ${{ env.environment }} | tr / -)
     - name: Terraform Destroy
       run: terraform destroy -auto-approve
