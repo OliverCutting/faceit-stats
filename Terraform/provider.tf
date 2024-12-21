@@ -19,7 +19,8 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Name        = var.tag_name,
+      Name        = local.service_name
+      Project     = var.tag_project
       GitRepo     = var.tag_gitrepo
       Environment = terraform.workspace
     }

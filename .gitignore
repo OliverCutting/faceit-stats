@@ -1,3 +1,5 @@
 .terraform
 .terraform.*
 __pycache__
+terraform/keys/*
+!terraform/keys/*.pub
